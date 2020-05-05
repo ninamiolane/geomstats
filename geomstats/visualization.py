@@ -624,7 +624,7 @@ class DataArrow():
         self.fig.patches.append(arrow)
 
 
-class Ellipsis():
+class Ellipsis2D():
     """Plotting class for ellipses representing SPD matrices in 2D."""
 
     def __init__(self):
@@ -641,7 +641,8 @@ class Ellipsis():
         self.fig.axes[0].plot(X, Y, **kwargs)
         return x, y
 
-    def compute_coordinates(self, P):
+    @staticmethod
+    def compute_coordinates(P):
         """
         Compute the ellipsis coordinates from 2D SPD matrix.
 
