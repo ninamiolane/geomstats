@@ -12,6 +12,7 @@ from autograd.numpy import (  # NOQA
     arccos,
     arccosh,
     arcsin,
+    arctan,
     arctan2,
     arctanh,
     argmax,
@@ -26,6 +27,7 @@ from autograd.numpy import (  # NOQA
     cross,
     cumprod,
     cumsum,
+    diag,
     diagonal,
     divide,
     dot,
@@ -283,8 +285,8 @@ def get_slice(x, indices):
 
     Examples
     --------
-    >>> a = np.array(range(30)).reshape(3,10)
-    >>> get_slice(a, ((0, 2), (8, 9)))
+    a = np.array(range(30)).reshape(3,10)
+    get_slice(a, ((0, 2), (8, 9)))
     array([8, 29])
     """
     return x[indices]
