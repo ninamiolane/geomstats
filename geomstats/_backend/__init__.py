@@ -112,6 +112,7 @@ BACKEND_ATTRIBUTES = {
         'zeros',
         'zeros_like'
     ],
+    'autograd': ['value_and_grad'],
     'linalg': [
         'det',
         'eig',
@@ -132,6 +133,7 @@ BACKEND_ATTRIBUTES = {
         #              'randn' is a convenience wrapper (which we don't use)
         #              for 'normal', 'rand' only wraps 'uniform'.
         'multivariate_normal',
+        'permutation',
         'rand',
         'randint',
         'seed',

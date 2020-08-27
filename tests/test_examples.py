@@ -7,6 +7,7 @@ import warnings
 
 import examples.empirical_frechet_mean_uncertainty_sn as empirical_frechet_mean_uncertainty_sn  # NOQA
 import examples.gradient_descent_s2 as gradient_descent_s2
+import examples.kalman_filter as kalman_filter
 import examples.learning_graph_structured_data_h2 as learning_gsd_h2
 import examples.loss_and_gradient_se3 as loss_and_gradient_se3
 import examples.loss_and_gradient_so3 as loss_and_gradient_so3
@@ -74,6 +75,10 @@ class TestExamples(geomstats.tests.TestCase):
         loss_and_gradient_se3.main()
 
     @staticmethod
+    def test_kalman_filter():
+        kalman_filter.main()
+
+    @staticmethod
     @geomstats.tests.np_only
     def test_learning_graph_structured_data_h2():
         learning_gsd_h2.main()
@@ -106,6 +111,11 @@ class TestExamples(geomstats.tests.TestCase):
     @staticmethod
     def test_plot_grid_h2():
         plot_grid_h2.main()
+
+    @geomstats.tests.np_and_pytorch_only
+    @staticmethod
+    def test_plot_mdm_spd():
+        plot_mdm_spd.main()
 
     @staticmethod
     def test_plot_mdm_spd():

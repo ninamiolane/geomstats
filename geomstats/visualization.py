@@ -40,7 +40,6 @@ def nice_matplotlib():
 
 
 def tutorial_matplotlib():
-    plt.style.use('seaborn')
     fontsize = 12
     matplotlib.rc('font', size=fontsize)
     matplotlib.rc('text')
@@ -652,8 +651,8 @@ class Ellipsis2D:
         Y: array-like, shape = [n_steps,];
         X and Y coordinates.
         """
-        w, vr = gs.linalg.eig(point)
-        w = w.real + EPS
+        w, vr = gs.linalg.eigh(point)
+        w = w + EPS
         n_steps = 100
 
         [e1, e2] = w

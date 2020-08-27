@@ -41,6 +41,7 @@ from torch import (  # NOQA
     lt as less,
     matmul,
     max as amax,
+    mean,
     meshgrid,
     min as amin,
     nonzero,
@@ -63,6 +64,7 @@ from torch import (  # NOQA
     zeros_like
 )
 
+from . import autograd # NOQA
 from . import linalg  # NOQA
 from . import random  # NOQA
 
@@ -369,7 +371,12 @@ def sum(x, axis=None, keepdims=None, **kwargs):
 
 def einsum(*args, **kwargs):
     einsum_str = args[0]
-    input_tensors_list = args[1:]
+    input_tensors_list = []
+
+    for x in args[1:]:
+        if not torch.is_tensor(x):
+            x = torch.tensor(x)
+        input_tensors_list.append(x)
 
     input_tensors_list = convert_to_wider_dtype(
         input_tensors_list)
@@ -554,12 +561,6 @@ def prod(x, axis=None):
     if axis is None:
         return torch.prod(x)
     return torch.prod(x, dim=axis)
-
-
-def mean(x, axis=None):
-    if axis is None:
-        return torch.mean(x)
-    return torch.mean(x, dim=axis)
 
 
 def where(condition, x=None, y=None):
