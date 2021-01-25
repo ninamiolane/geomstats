@@ -1,5 +1,5 @@
 # Geomstats
-[![PyPI version](https://badge.fury.io/py/geomstats.svg)](https://badge.fury.io/py/geomstats)[![Build Status](https://travis-ci.org/geomstats/geomstats.svg?branch=master)](https://travis-ci.org/geomstats/geomstats)[![Coverage Status](https://codecov.io/gh/geomstats/geomstats/branch/master/graph/badge.svg?flag=numpy)](https://codecov.io/gh/geomstats/geomstats)[![Coverage Status](https://codecov.io/gh/geomstats/geomstats/branch/master/graph/badge.svg?flag=tensorflow)](https://codecov.io/gh/geomstats/geomstats)[![Coverage Status](https://codecov.io/gh/geomstats/geomstats/branch/master/graph/badge.svg?flag=pytorch)](https://codecov.io/gh/geomstats/geomstats) (Coverages for: numpy, tensorflow, pytorch)
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/geomstats-papers.svg?style=social&label=Follow%20%40geomstats-papers)](https://twitter.com/geomstats)[![PyPI version](https://badge.fury.io/py/geomstats.svg)](https://badge.fury.io/py/geomstats)[![Build Status](https://travis-ci.org/geomstats/geomstats.svg?branch=master)](https://travis-ci.org/geomstats/geomstats)[![Slack](https://img.shields.io/badge/Slack-Join-yellow)](https://geomstats.slack.com/)[![Coverage Status](https://codecov.io/gh/geomstats/geomstats/branch/master/graph/badge.svg?flag=numpy)](https://codecov.io/gh/geomstats/geomstats)[![Coverage Status](https://codecov.io/gh/geomstats/geomstats/branch/master/graph/badge.svg?flag=tensorflow)](https://codecov.io/gh/geomstats/geomstats)[![Coverage Status](https://codecov.io/gh/geomstats/geomstats/branch/master/graph/badge.svg?flag=pytorch)](https://codecov.io/gh/geomstats/geomstats) (Coverages for: numpy, tensorflow, pytorch)
 
 
 Geomstats is an open-source Python package for computations and statistics on manifolds. The package is organized into two main modules:
@@ -7,12 +7,14 @@ Geomstats is an open-source Python package for computations and statistics on ma
 
 The module `geometry` implements concepts in differential geometry, and the module `learning` implements statistics and learning algorithms for data on manifolds.
 
-<img align="left" src="https://raw.githubusercontent.com/ninamiolane/geomstats/master/examples/imgs/h2_grid.png" width=110 height=110>
+<img align="left" src="https://raw.githubusercontent.com/ninamiolane/geomstats/master/examples/imgs/h2_grid.png" width=120 height=120>
 
-- To get started with ```geomstats```, see the [examples directory](https://github.com/geomstats/geomstats/tree/master/examples).
-- For more in-depth applications of ``geomstats``, see the [applications repository](https://github.com/geomstats/applications/).
+
+- To get an overview of ```geomstats```, see our [introductory video](https://www.youtube.com/watch?v=Ju-Wsd84uG0&list=PLYx7XA2nY5GejOB1lsvriFeMytD1-VS1B&index=3).
+- To get started with ```geomstats```, see the [examples](https://github.com/geomstats/geomstats/tree/master/examples) and [notebooks](https://github.com/geomstats/geomstats/tree/master/notebooks) directories.
 - The documentation of ```geomstats``` can be found on the [documentation website](https://geomstats.github.io/).
-- If you find ``geomstats`` useful, please kindly cite our [paper](https://arxiv.org/abs/2004.04667).
+- If you find ``geomstats`` useful, please kindly cite our [paper](https://jmlr.org/papers/v21/19-027.html).
+- To follow the scientific literature on geometric statistics, follow our twitter-bot @geomstats-papers !
 
 ## Install geomstats via pip3
 
@@ -78,7 +80,7 @@ space of 3D rotations.
 from geomstats.geometry.special_orthogonal import SpecialOrthogonal
 from geomstats.learning.pca import TangentPCA
 
-so3 = SpecialOrthogonal(n=3)
+so3 = SpecialOrthogonal(n=3, point_type='vector')
 metric = so3.bi_invariant_metric
 
 data = so3.random_uniform(n_samples=10)
@@ -93,7 +95,7 @@ The user only needs a high-level understanding of Riemannian geometry.
 Each algorithm can be used with any of the manifolds and metric
 implemented in the package.
 
-To see additional examples, go to the [examples directory](https://github.com/geomstats/geomstats/tree/master/examples).
+To see additional examples, go to the [examples](https://github.com/geomstats/geomstats/tree/master/examples) or [notebooks](https://github.com/geomstats/geomstats/tree/master/notebooks) directories.
 
 ## Contributing
 

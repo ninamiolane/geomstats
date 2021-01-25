@@ -5,10 +5,8 @@ from functools import wraps
 import numpy as _np
 import torch
 from torch import (  # NOQA
-    abs,
     acos as arccos,
     arange,
-    argmax,
     argmin,
     asin as arcsin,
     atan as arctan,
@@ -92,6 +90,7 @@ def _box_scalar(function):
     return wrapper
 
 
+abs = _box_scalar(abs)
 ceil = _box_scalar(ceil)
 cos = _box_scalar(cos)
 cosh = _box_scalar(cosh)
@@ -99,10 +98,17 @@ exp = _box_scalar(exp)
 log = _box_scalar(log)
 sin = _box_scalar(sin)
 sinh = _box_scalar(sinh)
+tan = _box_scalar(tan)
 
 
 def to_numpy(x):
     return x.numpy()
+
+
+def argmax(a, **kwargs):
+    if a.dtype == torch.bool:
+        return torch.as_tensor(_np.argmax(a.data.numpy(), **kwargs))
+    return torch.argmax(a, **kwargs)
 
 
 def convert_to_wider_dtype(tensor_list):
@@ -169,8 +175,8 @@ def any(x, axis=None):
 
 def cast(x, dtype):
     if torch.is_tensor(x):
-        return x.to(dtype)
-    return array(x).to(dtype)
+        return x.to(dtype=dtype)
+    return array(x).to(dtype=dtype)
 
 
 def flip(x, axis):
@@ -182,8 +188,7 @@ def flip(x, axis):
 
 
 def concatenate(seq, axis=0, out=None):
-    # XXX(nkoep): Why do we cast to float32 instead of float64 here?
-    seq = [cast(t, float32) for t in seq]
+    seq = convert_to_wider_dtype(seq)
     return torch.cat(seq, dim=axis, out=out)
 
 
@@ -378,8 +383,7 @@ def einsum(*args, **kwargs):
             x = torch.tensor(x)
         input_tensors_list.append(x)
 
-    input_tensors_list = convert_to_wider_dtype(
-        input_tensors_list)
+    input_tensors_list = convert_to_wider_dtype(input_tensors_list)
 
     if len(input_tensors_list) == 1:
         return torch.einsum(einsum_str, input_tensors_list)
@@ -761,3 +765,9 @@ def vectorize(x, pyfunc, multiple_args=False, **kwargs):
     if multiple_args:
         return stack(list(map(lambda y: pyfunc(*y), zip(*x))))
     return stack(list(map(pyfunc, x)))
+
+
+def triu_to_vec(x, k=0):
+    n = x.shape[-1]
+    rows, cols = triu_indices(n, k=k)
+    return x[..., rows, cols]
