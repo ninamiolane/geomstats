@@ -18,13 +18,13 @@ def main():
     dataset_generator = geomstats.datasets.sample_sdp_2d.DatasetSPD2D(
         n_samples, n_features, n_classes)
     data, labels = dataset_generator.generate_sample_dataset()
-
+    print(SPDMatrices(2).belongs(data))
     # plot dataset as ellipses
-    ellipsis = visualization.Ellipsis2D()
+    ellipsis_2d = visualization.Ellipsis2D()
     for i in range(n_samples):
         x = data[i]
         y = geomstats.datasets.sample_sdp_2d.get_label_at_index(i, labels)
-        ellipsis.draw(x, color=ellipsis.colors[y], alpha=.1)
+        ellipsis_2d.draw(x, color=ellipsis_2d.colors[y], alpha=.1)
 
     # define and fit MDM classifier to data
     metric = SPDMetricAffine(n=n_features)
@@ -34,9 +34,9 @@ def main():
 
     # plot Frechet means computed in the MDM
     for i in range(n_classes):
-        ellipsis.draw(
+        ellipsis_2d.draw(
             MDMEstimator.mean_estimates_[i],
-            color=ellipsis.colors_alt[i],
+            color=ellipsis_2d.colors_alt[i],
             linewidth=5,
             label='Barycenter of class ' + str(i))
 
@@ -46,18 +46,18 @@ def main():
 
     for i in range(data_test.shape[0]):
         c = list(predictions[i] == 1).index(True)
-        x_from, y_from = ellipsis.draw(
-            data_test[i], color=ellipsis.colors[c], linewidth=5)
-        _, _, x_to, y_to = ellipsis.compute_coordinates(
+        x_from, y_from = ellipsis_2d.draw(
+            data_test[i], color=ellipsis_2d.colors[c], linewidth=5)
+        _, _, x_to, y_to = ellipsis_2d.compute_coordinates(
             MDMEstimator.mean_estimates_[c])
-        arrow = visualization.DataArrow(ellipsis.fig)
+        arrow = visualization.DataArrow(ellipsis_2d.fig)
         arrow.draw(x_from, y_from, x_to, y_to)
 
-    ellipsis.fig.axes[0].set_title(
+    ellipsis_2d.fig.axes[0].set_title(
         'Example plot of the MDM classifier in dimension 2\n'
         '3-class fit and 3 test sample prediction\n'
         '(black arrows denote assignement)')
-    ellipsis.plot()
+    ellipsis_2d.plot()
 
 
 if __name__ == '__main__':

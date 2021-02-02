@@ -147,6 +147,38 @@ class _SpecialOrthogonalMatrices(GeneralLinear, LieGroup):
         """
         return SkewSymmetricMatrices(self.n).basis_representation(skew_mat)
 
+    def multiply_angle_of_rot2(self, point, alpha):
+        """Divide the angle of a 2D rotation by a scalar; vectorized version.
+
+        Best to have original angle in :math [0, PI].
+        :param point: array-like (or a list of), shape = [n, n]: rotation
+        :param alpha: float: scalar (or a list of) to divide of angle by
+        :return: array-like (or a list of), shape=[n, n]:
+                 rotation with divided angle
+        """
+        if self.n != 2:
+            raise NotImplementedError
+        angle = self.log(point) * alpha
+        return self.exp(angle)
+
+    def random_gaussian(self, mean, var, n_samples=1):
+        """Emulate a Gaussian distribution in SO(n).
+
+        WARNING: This was only tested and may be viable only in SO(2).
+
+        :param mean: array-like, shape=[n, n]
+                     Mean rotation.
+        :param var: float
+                    Variance of the distribution,
+                    corresponds to an angle in dimension 2.
+        :param n_samples: int, number of samples
+        :return: rot_gaussian: array-like, shape=[n_samples, n, n]
+        """
+        rot_uniform = self.random_uniform(n_samples)
+        rot_normalized = self.multiply_angle_of_rot2(rot_uniform, var)
+        rot_gaussian = gs.matmul(mean, rot_normalized)
+        return rot_gaussian
+
 
 class _SpecialOrthogonalVectors(LieGroup):
     """Class for the special orthogonal groups SO({2,3}) in vector form.
