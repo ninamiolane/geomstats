@@ -42,10 +42,6 @@ def randint(low, high=None, size=None):
         maxval=maxval, dtype=tf.int32, seed=None, name=None)
 
 
-def rand(*args):
-    return tf.random.uniform(shape=args)
-
-
 def seed(*args):
     return tf.compat.v1.set_random_seed(*args)
 
