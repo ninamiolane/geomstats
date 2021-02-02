@@ -177,7 +177,7 @@ class _SpecialOrthogonalMatrices(GeneralLinear, LieGroup):
         rot_uniform = self.random_uniform(n_samples)
         rot_normalized = self.multiply_angle_of_rot2(rot_uniform, var)
         rot_gaussian = gs.matmul(mean, rot_normalized)
-        return rot_gaussian
+        return rot_gaussian.real
 
 
 class _SpecialOrthogonalVectors(LieGroup):

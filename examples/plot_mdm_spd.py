@@ -18,13 +18,13 @@ def main():
     dataset_generator = geomstats.datasets.sample_sdp_2d.DatasetSPD2D(
         n_samples, n_features, n_classes)
     data, labels = dataset_generator.generate_sample_dataset()
-    print(SPDMatrices(2).belongs(data))
+
     # plot dataset as ellipses
     ellipsis_2d = visualization.Ellipsis2D()
     for i in range(n_samples):
         x = data[i]
         y = geomstats.datasets.sample_sdp_2d.get_label_at_index(i, labels)
-        ellipsis_2d.draw(x, color=ellipsis_2d.colors[y], alpha=.1)
+        ellipsis_2d.draw(x, color=ellipsis_2d.colors_alt[y], alpha=.1)
 
     # define and fit MDM classifier to data
     metric = SPDMetricAffine(n=n_features)
@@ -37,17 +37,17 @@ def main():
         ellipsis_2d.draw(
             MDMEstimator.mean_estimates_[i],
             color=ellipsis_2d.colors_alt[i],
-            linewidth=5,
-            label='Barycenter of class ' + str(i))
+            linewidth=3,
+            label='Barycenter of class {}'.format(i))
 
     # generate random test samples, and predict with MDM classifier
-    data_test = SPDMatrices(n=n_features).random_uniform(n_samples=3)
+    data_test = SPDMatrices(n=n_features).random_uniform(n_samples=3) / 2
     predictions = MDMEstimator.predict(data_test)
 
     for i in range(data_test.shape[0]):
         c = list(predictions[i] == 1).index(True)
         x_from, y_from = ellipsis_2d.draw(
-            data_test[i], color=ellipsis_2d.colors[c], linewidth=5)
+            data_test[i], color=ellipsis_2d.colors[c], linewidth=3)
         _, _, x_to, y_to = ellipsis_2d.compute_coordinates(
             MDMEstimator.mean_estimates_[c])
         arrow = visualization.DataArrow(ellipsis_2d.fig)

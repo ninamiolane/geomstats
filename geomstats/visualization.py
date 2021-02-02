@@ -733,8 +733,6 @@ class Ellipsis2D:
 
         [e1, e2] = w
         x0, y0 = 0, 0
-        n = vr.shape[0]
-        print(vr)
         angle = SpecialOrthogonal(2, 'vector').rotation_vector_from_matrix(vr)
         c, s = gs.cos(angle), gs.sin(angle)
         the = gs.linspace(0, 2 * gs.pi, n_steps)
