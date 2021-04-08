@@ -120,6 +120,10 @@ class TestExamples(geomstats.tests.TestCase):
         plot_mdm_spd.main()
 
     @staticmethod
+    def test_plot_mdm_spd():
+        plot_mdm_spd.main()
+
+    @staticmethod
     def test_plot_square_h2_square_poincare_disk():
         plot_square_h2_poincare_disk.main()
 
