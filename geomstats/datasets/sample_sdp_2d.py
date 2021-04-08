@@ -44,7 +44,7 @@ class DatasetSPD2D:
         X, y = shuffle(X, y)
         return X, y
 
-    def setup_data(self):
+    def setup_data(self, min_range=.1, max_range=5., var=1.):
         """Generate the un-shuffled dataset.
 
         Returns
@@ -56,12 +56,10 @@ class DatasetSPD2D:
             Labels.
         """
         mean_covariance_eigenvalues = gs.random.uniform(
-            0.1, 5., (self.n_classes, self.n_features))
-        var = 1.
+            min_range, max_range, (self.n_classes, self.n_features))
         base_rotations = SpecialOrthogonal(n=self.n_features).random_gaussian(
             gs.eye(self.n_features), var, n_samples=self.n_classes)
-        var_rotations = gs.random.uniform(
-            .5, .75, (self.n_classes))
+        var_rotations = gs.random.uniform(.5, .75, self.n_classes)
 
         y = gs.zeros((self.n_classes * self.n_samples, self.n_classes))
         X = []
@@ -70,8 +68,8 @@ class DatasetSPD2D:
                 base_rotations[i], gs.diag(
                     mean_covariance_eigenvalues[i]), var_rotations[i])
             value_y = 1
-            idx_y = [(j, i) for j in range(i * self.n_samples, (i + 1) *
-                                           self.n_samples)]
+            idx_y = [(j, i) for j in range(
+                i * self.n_samples, (i + 1) * self.n_samples)]
             y = gs.assignment(y, value_y, idx_y)
             X.append(value_x)
         return gs.concatenate(X, axis=0), y
