@@ -1,6 +1,7 @@
 """Riemannian and pseudo-Riemannian metrics."""
 
 import autograd
+import joblib
 
 import geomstats.backend as gs
 import geomstats.vectorization
@@ -294,27 +295,45 @@ class RiemannianMetric(Connection):
         dist = gs.sqrt(sq_dist)
         return dist
 
-    def dist_pairwise(self, point):
+    def dist_pairwise(self, points, n_jobs=1, **joblib_kwargs):
         """Compute the pairwise distance between points.
 
         Parameters
         ----------
-        point : array-like, shape=[n_samples, dim]
-            Set of points in hyperbolic space.
+        points : array-like, shape=[n_samples, dim]
+            Set of points in the manifold.
+        n_jobs : int
+            Number of jobs to run in parallel, using joblib. Note that a
+            higher number of jobs may not be beneficial when one computation
+            of a geodesic distance is cheap.
+            Optional. Default: 1.
+        **joblib_kwargs : dict
+            Keyword arguments to joblib.Parallel
 
         Returns
         -------
         dist : array-like, shape=[n_samples, n_samples]
-            Pairwise distance matrix between all points.
-        """
-        pairwise_dist = []
+            Pairwise distance matrix between all the points.
 
-        for i, x in enumerate(point):
-            for y in point[i:]:
-                pairwise_dist.append(self.dist(x, y))
+        See Also
+        --------
+        https://joblib.readthedocs.io/en/latest/
+        """
+        n_samples = points.shape[0]
+        rows, cols = gs.triu_indices(n_samples)
+
+        @joblib.delayed
+        @joblib.wrap_non_picklable_objects
+        def pickable_dist(x, y):
+            """Wrap distance function to make it pickable."""
+            return self.dist(x, y)
+
+        pool = joblib.Parallel(n_jobs=n_jobs, **joblib_kwargs)
+        out = pool(
+            pickable_dist(points[i], points[j]) for i, j in zip(rows, cols))
 
         pairwise_dist = geomstats.geometry.symmetric_matrices.\
-            SymmetricMatrices.from_vector(gs.array(pairwise_dist))
+            SymmetricMatrices.from_vector(gs.array(out))
 
         return pairwise_dist
 
@@ -383,3 +402,42 @@ class RiemannianMetric(Connection):
         norms = self.squared_norm(basis, base_point)
 
         return gs.einsum('i, ikl->ikl', 1. / gs.sqrt(norms), basis)
+
+    def sectional_curvature(
+            self, tangent_vec_a, tangent_vec_b, base_point=None):
+        """Compute the sectional curvature.
+
+        For two orthonormal tangent vectors at a base point :math: `x,y`,
+        the sectional curvature is defined by :math: `<R(x, y)x,
+        y>`. Non-orthonormal vectors can be given.
+
+        Parameters
+        ----------
+        tangent_vec_a : array-like, shape=[..., n, n]
+            Tangent vector at `base_point`.
+        tangent_vec_b : array-like, shape=[..., n, n]
+            Tangent vector at `base_point`.
+        base_point : array-like, shape=[..., n, n]
+            Point in the group. Optional, default is the identity
+
+        Returns
+        -------
+        sectional_curvature : array-like, shape=[...,]
+            Sectional curvature at `base_point`.
+
+        See Also
+        --------
+        https://en.wikipedia.org/wiki/Sectional_curvature
+        """
+        curvature = self.curvature(
+            tangent_vec_a, tangent_vec_b, tangent_vec_a, base_point)
+        sectional = self.inner_product(curvature, tangent_vec_b, base_point)
+        norm_a = self.squared_norm(tangent_vec_a, base_point)
+        norm_b = self.squared_norm(tangent_vec_b, base_point)
+        inner_ab = self.inner_product(tangent_vec_a, tangent_vec_b, base_point)
+        normalization_factor = norm_a * norm_b - inner_ab ** 2
+
+        condition = gs.isclose(normalization_factor, 0.)
+        normalization_factor = gs.where(
+            condition, EPSILON, normalization_factor)
+        return gs.where(~condition, sectional / normalization_factor, 0.)

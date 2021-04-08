@@ -68,11 +68,6 @@ class _InvariantMetricMatrix(RiemannianMetric):
         basis matrices of this space. The diagonal is filled with ones.
         This useful to compute a matrix inner product.
 
-        Parameters
-        ----------
-        metric_matrix : array-like, shape=[dim, dim]
-            Diagonal metric matrix.
-
         Returns
         -------
         symmetric_matrix : array-like, shape=[n, n]
@@ -101,12 +96,12 @@ class _InvariantMetricMatrix(RiemannianMetric):
         inner_prod : array-like, shape=[...]
             Inner-product of the two tangent vectors.
         """
-        aux_prod = tangent_vec_a * tangent_vec_b
+        tan_b = tangent_vec_b
         metric_mat = self.metric_mat_at_identity
         if (Matrices.is_diagonal(metric_mat)
                 and self.lie_algebra is not None):
-            aux_prod *= self.reshaped_metric_matrix
-        inner_prod = gs.sum(aux_prod, axis=(-2, -1))
+            tan_b = tangent_vec_b * self.reshaped_metric_matrix
+        inner_prod = Matrices.frobenius_product(tangent_vec_a, tan_b)
         return inner_prod
 
     def inner_product(self, tangent_vec_a, tangent_vec_b, base_point=None):
@@ -552,9 +547,9 @@ class _InvariantMetricMatrix(RiemannianMetric):
         n_steps : int,
             Number of integration steps.
             Optional, default : 15.
-        step : str, {'group_rk2', 'group_rk4'}
+        step : str, {'euler', 'rk2', 'rk4'}
             Scheme to use in the integration.
-            Optional, default : 'group_rk4'.
+            Optional, default : 'rk4'.
 
         Returns
         -------
@@ -595,7 +590,7 @@ class _InvariantMetricMatrix(RiemannianMetric):
                             step=step, **kwargs)
         return flow[-1]
 
-    def log(self, point, base_point, n_steps=15, step='k4',
+    def log(self, point, base_point, n_steps=15, step='rk4',
             verbose=False, max_iter=25, tol=1e-10):
         r"""Compute Riemannian logarithm of a point from a base point.
 
@@ -620,10 +615,10 @@ class _InvariantMetricMatrix(RiemannianMetric):
             Number of integration steps to compute the exponential in the
             loss.
             Optional, default : 15.
-        step : str, {'group_rk2', 'group_rk4'}
+        step : str, {'euler', 'rk2', 'rk4'}
             Scheme to use in the integration procedure of the exponential in
             the loss.
-            Optional, default : 'group_rk4'.
+            Optional, default : 'rk4'.
         verbose : bool,
             Verbosity level of the optimization procedure.
             Optional. default : False.
@@ -715,11 +710,8 @@ class _InvariantMetricVector(RiemannianMetric):
         inv_jacobian = GeneralLinear.inverse(jacobian)
         inv_jacobian_transposed = Matrices.transpose(inv_jacobian)
 
-        metric_mat = gs.einsum(
-            '...ij,...jk->...ik',
-            inv_jacobian_transposed, self.metric_mat_at_identity)
-        metric_mat = gs.einsum(
-            '...ij,...jk->...ik', metric_mat, inv_jacobian)
+        metric_mat = Matrices.mul(
+            inv_jacobian_transposed, self.metric_mat_at_identity, inv_jacobian)
         return metric_mat
 
     def left_exp_from_identity(self, tangent_vec):
@@ -1033,7 +1025,8 @@ class BiInvariantMetric(_InvariantMetricVector):
                        Geonger International Publishing, 2020.
                        https://doi.org/10.1007/978-3-030-46040-2.
         """
-        return self.group.log(point, base_point)
+        log = self.group.log(point, base_point)
+        return self.group.to_tangent(log, base_point)
 
     def inner_product_at_identity(self, tangent_vec_a, tangent_vec_b):
         """Compute inner product at tangent space at identity.
@@ -1053,7 +1046,7 @@ class BiInvariantMetric(_InvariantMetricVector):
         if self.default_point_type == 'vector':
             return super(BiInvariantMetric, self).inner_product_at_identity(
                 tangent_vec_a, tangent_vec_b)
-        return gs.einsum('...ij,...ij->...', tangent_vec_a, tangent_vec_b)
+        return Matrices.frobenius_product(tangent_vec_a, tangent_vec_b)
 
     def inner_product(self, tangent_vec_a, tangent_vec_b, base_point=None):
         """Compute inner product of two vectors in tangent space at base point.
