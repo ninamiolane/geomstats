@@ -114,12 +114,8 @@ class TestExamples(geomstats.tests.TestCase):
     def test_plot_grid_h2():
         plot_grid_h2.main()
 
+    @staticmethod
     @geomstats.tests.np_and_pytorch_only
-    @staticmethod
-    def test_plot_mdm_spd():
-        plot_mdm_spd.main()
-
-    @staticmethod
     def test_plot_mdm_spd():
         plot_mdm_spd.main()
 

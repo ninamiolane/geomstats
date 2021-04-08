@@ -91,7 +91,7 @@ def kmean_hypersphere():
 
     data = gs.concatenate((cluster_1, cluster_2), axis=0)
 
-    kmeans = RiemannianKMeans(metric, n_clusters, tol=1e-3)
+    kmeans = RiemannianKMeans(metric, n_clusters, tol=1e-3, lr=1)
     kmeans.fit(data)
     labels = kmeans.predict(data)
     centroids = kmeans.centroids

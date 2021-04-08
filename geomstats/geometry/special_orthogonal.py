@@ -1591,7 +1591,7 @@ class _SpecialOrthogonal3Vectors(_SpecialOrthogonalVectors):
 
         return random_point
 
- def lie_bracket(
+    def lie_bracket(
             self, tangent_vector_a, tangent_vector_b, base_point=None):
         """Compute the lie bracket of two tangent vectors.
 
@@ -1616,7 +1616,7 @@ class _SpecialOrthogonal3Vectors(_SpecialOrthogonalVectors):
         """
         return gs.cross(tangent_vector_a, tangent_vector_b)
 
-  def exp(self, tangent_vec, base_point=None):
+    def exp(self, tangent_vec, base_point=None):
         """Compute the group exponential.
 
         Parameters
