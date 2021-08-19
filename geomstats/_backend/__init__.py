@@ -113,7 +113,7 @@ BACKEND_ATTRIBUTES = {
         'zeros',
         'zeros_like'
     ],
-    'autograd': ['value_and_grad', 'custom_gradient'],
+    'autograd': ['value_and_grad'],
     'linalg': [
         'cholesky',
         'det',

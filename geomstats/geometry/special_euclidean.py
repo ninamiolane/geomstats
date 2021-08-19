@@ -1033,17 +1033,7 @@ class SpecialEuclideanMatrixCannonicalLeftMetric(_InvariantMetricMatrix):
         next_point = self.exp(tangent_vec_b, base_point)
         first_sym = self.exp(- self.log(point, midpoint), midpoint)
         transported_vec = - self.log(first_sym, next_point)
-        return transported_vec
-
-    @gs.autograd.custom_gradient
-    def squared_dist(self, point_a, point_b):
-        dist = super().squared_dist(point_a, point_b)
-
-        def grad(_):
-            grd = 2 * self.log(point_a, point_b)
-            return grd, 2 * self.log(point_b, point_a)
-
-        return dist, grad
+        return transported_vec  
 
 
 class SpecialEuclidean(_SpecialEuclidean2Vectors,
