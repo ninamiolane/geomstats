@@ -263,8 +263,33 @@ class TestPullbackMetric(geomstats.tests.TestCase):
         The parallel transport of pullback_metric is defined
         in terms of the spherical coordinates.
         """
+        # Test a basis vector transported along a basis vector
         tangent_vec_a = gs.array([0.0, 1.0])
         tangent_vec_b = gs.array([0.0, 1.0])
+        base_point = gs.array([gs.pi / 2.0, 0.0])
+        immersed_base_point = self.immersion(base_point)
+        jac_immersion = self.pullback_metric.jacobian_immersion(base_point)
+        immersed_tangent_vec_a = gs.matmul(jac_immersion, tangent_vec_a)
+        immersed_tangent_vec_b = gs.matmul(jac_immersion, tangent_vec_b)
+
+        result_dict = self.pullback_metric.ladder_parallel_transport(
+            tangent_vec_a, tangent_vec_b, base_point=base_point
+        )
+
+        result = result_dict["transported_tangent_vec"]
+        end_point = result_dict["end_point"]
+        result = self.pullback_metric.tangent_immersion(v=result, x=end_point)
+
+        expected = self.sphere_metric.parallel_transport(
+            immersed_tangent_vec_a,
+            immersed_tangent_vec_b,
+            base_point=immersed_base_point,
+        )
+        self.assertAllClose(result, expected, atol=1e-5)
+
+        # Test a vector transported along a vector
+        tangent_vec_a = gs.array([0.2, 1.4])
+        tangent_vec_b = gs.array([1.2, 0.1])
         base_point = gs.array([gs.pi / 2.0, 0.0])
         immersed_base_point = self.immersion(base_point)
         jac_immersion = self.pullback_metric.jacobian_immersion(base_point)
